@@ -1,5 +1,5 @@
 
-export const API_BASE = (import.meta as any).env?.PUBLIC_API_BASE || 'https://localhost:7190';
+export const API_BASE = (import.meta as any).env?.PUBLIC_API_BASE || 'https://agora-api-unique.azurewebsites.net';
 
 function getCookie(name: string): string | null {
     try {
