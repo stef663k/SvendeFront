@@ -6,6 +6,7 @@
 	"engines": {
 		"node": ">=20 <25"
 	},
+	"packageManager": "pnpm@9",
 	"scripts": {
 		"dev": "cross-env ROLLUP_WASM=true vite dev",
 		"build": "cross-env ROLLUP_WASM=true svelte-kit sync && cross-env ROLLUP_WASM=true vite build",
@@ -21,7 +22,6 @@
 		"svelte": "^5.39.5",
 		"svelte-check": "^4.3.2",
 		"typescript": "^5.9.2",
-		"vite": "^7.1.7",
-		"packageManager": "pnpm@9"
+		"vite": "^7.1.7"
 	}
 }
