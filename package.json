@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=20 <25"
   },
-  "packageManager": "pnpm@9",
+  "packageManager": "pnpm@10.20.0",
   "scripts": {
     "dev": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite dev",
     "build": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite build",
