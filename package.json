@@ -1,31 +1,32 @@
 {
-	"name": "svendefront",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"engines": {
-		"node": ">=20 <25"
-	},
-	"packageManager": "pnpm@9",
-	"scripts": {
-		"dev": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite dev",
-		"build": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite build",
-		"preview": "vite preview",
-		"check": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
-	},
-	"devDependencies": {
-		"cross-env": "^7.0.3",
-		"@sveltejs/adapter-auto": "^6.1.0",
-		"@sveltejs/kit": "^2.43.2",
-		"@sveltejs/vite-plugin-svelte": "^6.2.0",
-		"svelte": "^5.39.5",
-		"svelte-check": "^4.3.2",
-		"typescript": "^5.9.2",
-		"vite": "^7.1.7",
-		"rollup": "npm:@rollup/wasm-node@^4.24.0"
-	},
-	"overrides": {
-		"rollup": "npm:@rollup/wasm-node@^4.24.0"
-	}
+  "name": "svendefront",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=20 <25"
+  },
+  "packageManager": "pnpm@9",
+  "scripts": {
+    "dev": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite dev",
+    "build": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite build",
+    "preview": "vite preview",
+    "check": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "@sveltejs/adapter-auto": "^6.1.0",
+    "@sveltejs/kit": "^2.43.2",
+    "@sveltejs/vite-plugin-svelte": "^6.2.0",
+    "svelte": "^5.39.5",
+    "svelte-check": "^4.3.2",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7"
+  },
+  "pnpm": {
+    "resolutions": {
+      "rollup": "npm:@rollup/wasm-node@^4.24.0"
+    }
+  }
 }
