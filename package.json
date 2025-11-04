@@ -8,11 +8,11 @@
 	},
 	"packageManager": "pnpm@9",
 	"scripts": {
-		"dev": "cross-env ROLLUP_WASM=true vite dev",
-		"build": "cross-env ROLLUP_WASM=true svelte-kit sync && cross-env ROLLUP_WASM=true vite build",
+		"dev": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite dev",
+		"build": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true vite build",
 		"preview": "vite preview",
-		"check": "cross-env ROLLUP_WASM=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "cross-env ROLLUP_WASM=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "cross-env ROLLUP_WASM=true ROLLUP_SKIP_NODEJS_NATIVE=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.3",
