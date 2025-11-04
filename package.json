@@ -7,12 +7,12 @@
 		"node": "20.x"
 	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "cross-env ROLLUP_WASM=true vite dev",
 		"build": "cross-env ROLLUP_WASM=true vite build",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"prepare": "cross-env ROLLUP_WASM=true svelte-kit sync || echo ''",
+		"check": "cross-env ROLLUP_WASM=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "cross-env ROLLUP_WASM=true svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.3",
