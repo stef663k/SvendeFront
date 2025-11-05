@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { api, API_BASE } from '$lib';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import { browser } from '$app/environment';
 
     let firstName: string = '';
@@ -46,6 +46,7 @@
             hasAdminRole(data?.user?.roles) || hasAdminRole(data?.roles) ||
             hasAdminRole(data?.user?.role) || hasAdminRole(data?.user?.roleName)
         );
+        await tick();
 
         try {
             console.log('session user roles:', {
@@ -242,29 +243,15 @@
         }
     }
 
-    function getUserIdFrom(entity: any): string | null {
-        if (!entity) return null;
-        const base = entity.user ?? entity.author ?? entity;
-        const tryKeys = (obj: any, keys: string[]) => {
-            for (const k of keys) {
-                if (obj && obj[k]) return String(obj[k]);
-            }
-            return null;
-        };
-        const direct =
-            tryKeys(entity, ['authorUserId', 'userId', 'authorId', 'createdById']) ||
-            tryKeys(base, ['authorUserId', 'userId', 'authorId', 'createdById']);
-        if (direct) return direct;
-        for (const [k, v] of Object.entries(entity)) {
-            if (/userId$/i.test(k) || /authoruserId$/i.test(k)) {
-                if (v) return String(v);
-            }
-        }
-        for (const [k, v] of Object.entries(base)) {
-            if (/userId$/i.test(k) || /authoruserId$/i.test(k)) {
-                if (v) return String(v);
-            }
-        }
+    function getUserIdFrom(e: any): string | null {
+        if (!e) return null;
+        if (e.authorId) return String(e.authorId);
+        if (e.userId) return String(e.userId);
+        const base = e.user ?? e.author ?? e;
+        if (base?.authorId) return String(base.authorId);
+        if (base?.userId) return String(base.userId);
+        for (const [k, v] of Object.entries(e)) if (/userId$/i.test(k) && v) return String(v);
+        for (const [k, v] of Object.entries(base)) if (/userId$/i.test(k) && v) return String(v);
         return null;
     }
 
@@ -425,6 +412,9 @@
                                     {/if}
                                 </div>
                             </div>
+                            {#if false}
+                                <span class="muted small">uid={getUserIdFrom(post)} me={currentUserId} admin={isAdmin ? 'y' : 'n'}</span>
+                            {/if}
                             <div class="post-body">{post.content ?? post.text ?? ''}</div>
                             <div class="comment-editor">
                                 <textarea
