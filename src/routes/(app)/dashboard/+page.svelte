@@ -294,16 +294,26 @@
         if (!postId) return;
         try {
             const res = await api(`/api/Post/${encodeURIComponent(postId)}`, { method: 'DELETE' });
-            if (!res.ok) {
-                console.error('Delete post failed', await res.text().catch(() => ''));
+            if (res.status === 204) {
+                posts = posts.filter(p => (p.postId || p.id) !== postId);
+                delete expandedComments[postId];
+                delete postIdToComments[postId];
+                delete postIdToLoading[postId];
+                delete postIdToNewComment[postId];
+                delete postIdToPosting[postId];
                 return;
             }
-            posts = posts.filter(p => (p.postId || p.id) !== postId);
-            delete expandedComments[postId];
-            delete postIdToComments[postId];
-            delete postIdToLoading[postId];
-            delete postIdToNewComment[postId];
-            delete postIdToPosting[postId];
+            if (res.status === 403) {
+                console.warn("You don't have permission to delete this post");
+                return;
+            }
+            if (res.status === 404) {
+                console.warn('Post already deleted or not found');
+                // Ensure UI reflects it
+                posts = posts.filter(p => (p.postId || p.id) !== postId);
+                return;
+            }
+            console.error('Delete post failed', await res.text().catch(() => ''));
         } catch (err) {
             console.error('Delete post error', err);
         }
@@ -313,21 +323,29 @@
         if (!commentId) return;
         try {
             const res = await api(`/api/Comment/${encodeURIComponent(commentId)}`, { method: 'DELETE' });
-            if (!res.ok) {
-                console.error('Delete comment failed', await res.text().catch(() => ''));
+            if (res.status === 204) {
+                if (parentPostId && postIdToComments[parentPostId]) {
+                    postIdToComments[parentPostId] = postIdToComments[parentPostId].filter(c => (c.commentId || c.id) !== commentId);
+                }
                 return;
             }
-            if (parentPostId && postIdToComments[parentPostId]) {
-                postIdToComments[parentPostId] = postIdToComments[parentPostId].filter(c => (c.commentId || c.id) !== commentId);
+            if (res.status === 403) {
+                console.warn("You don't have permission to delete this comment");
+                return;
             }
+            if (res.status === 404) {
+                console.warn('Comment already deleted or not found');
+                if (parentPostId && postIdToComments[parentPostId]) {
+                    postIdToComments[parentPostId] = postIdToComments[parentPostId].filter(c => (c.commentId || c.id) !== commentId);
+                }
+                return;
+            }
+            console.error('Delete comment failed', await res.text().catch(() => ''));
         } catch (err) {
             console.error('Delete comment error', err);
         }
     }
 
-    function handleDeletePost(postId: string) {
-        
-    }
 </script>
 
 <div class="page-header">
