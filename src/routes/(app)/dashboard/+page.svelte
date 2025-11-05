@@ -7,6 +7,7 @@
     let firstName: string = '';
     let currentUserId: string = '';
     let currentUserName: string = '';
+    let isAdmin: boolean = false;
     let newPost: string = '';
     let posts: any[] = [];
     let isLoadingFeed = true;
@@ -30,6 +31,10 @@
         firstName = data?.user?.firstName || data?.user?.email || '';
         currentUserId = data?.user?.userId || '';
         currentUserName = [data?.user?.firstName, data?.user?.lastName].filter(Boolean).join(' ').trim();
+        isAdmin = Boolean(
+            data?.user?.isAdmin ||
+            (Array.isArray(data?.user?.roles) && data.user.roles.some((r: any) => String(r).toLowerCase() === 'admin'))
+        );
         if (data?.token) {
             const { setAccessToken } = await import('$lib');
             setAccessToken(data.token);
@@ -265,6 +270,54 @@
         const combined = `${first} ${last}`.trim();
         return combined || 'Unknown';
     }
+
+    function isOwner(entity: any): boolean {
+        const uid = getUserIdFrom(entity);
+        return !!uid && !!currentUserId && String(uid) === String(currentUserId);
+    }
+
+    function canDeleteEntity(entity: any): boolean {
+        return isAdmin || isOwner(entity);
+    }
+
+    async function deletePost(postId: string) {
+        if (!postId) return;
+        try {
+            const res = await api(`/api/Post/${encodeURIComponent(postId)}`, { method: 'DELETE' });
+            if (!res.ok) {
+                console.error('Delete post failed', await res.text().catch(() => ''));
+                return;
+            }
+            posts = posts.filter(p => (p.postId || p.id) !== postId);
+            delete expandedComments[postId];
+            delete postIdToComments[postId];
+            delete postIdToLoading[postId];
+            delete postIdToNewComment[postId];
+            delete postIdToPosting[postId];
+        } catch (err) {
+            console.error('Delete post error', err);
+        }
+    }
+
+    async function deleteComment(commentId: string, parentPostId?: string) {
+        if (!commentId) return;
+        try {
+            const res = await api(`/api/Comment/${encodeURIComponent(commentId)}`, { method: 'DELETE' });
+            if (!res.ok) {
+                console.error('Delete comment failed', await res.text().catch(() => ''));
+                return;
+            }
+            if (parentPostId && postIdToComments[parentPostId]) {
+                postIdToComments[parentPostId] = postIdToComments[parentPostId].filter(c => (c.commentId || c.id) !== commentId);
+            }
+        } catch (err) {
+            console.error('Delete comment error', err);
+        }
+    }
+
+    function handleDeletePost(postId: string) {
+        
+    }
 </script>
 
 <div class="page-header">
@@ -312,7 +365,12 @@
                                     <strong>{displayNameFromCache(post)}</strong>
                                     <span class="muted small">{timeAgo(post.createdAt ?? post.created)}</span>
                                 </div>
-                                <button class="ghost" type="button" onclick={() => toggleComments(post.postId || post.id)}>Comments</button>
+                                <div style="display:flex; gap:0.5rem; align-items:center;">
+                                    <button class="ghost" type="button" onclick={() => toggleComments(post.postId || post.id)}>Comments</button>
+                                    {#if canDeleteEntity(post)}
+                                        <button class="ghost" type="button" onclick={() => deletePost(post.postId || post.id)}>Delete</button>
+                                    {/if}
+                                </div>
                             </div>
                             <div class="post-body">{post.content ?? post.text ?? ''}</div>
                             <div class="comment-editor">
@@ -337,7 +395,12 @@
                                         {:else}
                                             {#each postIdToComments[post.postId || post.id] as c}
                                                 <div class="comment-row">
-                                                    <div class="comment-author"><strong>{displayNameFromCache(c)}</strong></div>
+                                                    <div class="comment-author" style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+                                                        <strong>{displayNameFromCache(c)}</strong>
+                                                        {#if canDeleteEntity(c)}
+                                                            <button class="ghost" type="button" onclick={() => deleteComment(c.commentId || c.id, post.postId || post.id)}>Delete</button>
+                                                        {/if}
+                                                    </div>
                                                     <div class="comment-body">{c.content ?? c.text ?? ''}</div>
                                                 </div>
                                             {/each}
