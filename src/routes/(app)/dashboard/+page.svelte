@@ -249,9 +249,17 @@
     async function resolveUserName(userId: string) {
         if (userIdToName[userId]) return;
         try {
-            const res = await api(`/api/User/${encodeURIComponent(userId)}/public`);
+            let u: any = null;
+            let res = await api(`/api/User/${encodeURIComponent(userId)}/public`);
+            if (res.status === 401) {
+                // Fallback: try unauthenticated fetch in case the endpoint is truly public
+                try {
+                    const plain = await fetch(`${API_BASE}/api/User/${encodeURIComponent(userId)}/public`, { credentials: 'omit' });
+                    if (plain.ok) res = plain as any;
+                } catch {}
+            }
             if (!res.ok) return;
-            const u = await res.json().catch(() => null);
+            u = await (res as Response).json().catch(() => null);
             if (!u) return;
             const name = [u.firstName, u.lastName].filter(Boolean).join(' ').trim() || String(userId);
             userIdToName = { ...userIdToName, [userId]: name };
