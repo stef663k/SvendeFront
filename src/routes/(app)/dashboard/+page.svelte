@@ -29,11 +29,12 @@
         }
         const data = await res.json().catch(() => null);
         firstName = data?.user?.firstName || data?.user?.email || '';
-        currentUserId = data?.user?.userId || '';
+        currentUserId = data?.user?.userId || data?.user?.id || data?.userId || data?.id || '';
         currentUserName = [data?.user?.firstName, data?.user?.lastName].filter(Boolean).join(' ').trim();
         isAdmin = Boolean(
             data?.user?.isAdmin ||
-            (Array.isArray(data?.user?.roles) && data.user.roles.some((r: any) => String(r).toLowerCase() === 'admin'))
+            (Array.isArray(data?.user?.roles) && data.user.roles.some((r: any) => String(r).toLowerCase() === 'admin')) ||
+            (Array.isArray(data?.roles) && data.roles.some((r: any) => String(r).toLowerCase() === 'admin'))
         );
         if (data?.token) {
             const { setAccessToken } = await import('$lib');
