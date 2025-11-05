@@ -89,16 +89,7 @@
         if (!isAdmin) isAdmin = deriveAdminFromToken();
         await tick();
 
-        try {
-            console.log('session user roles:', {
-                roles_user: data?.user?.roles,
-                roles_root: data?.roles,
-                role_user: data?.user?.role,
-                roleName_user: data?.user?.roleName,
-                isAdmin,
-                currentUserId
-            });
-        } catch {}
+        
         if (data?.token) {
             const { setAccessToken } = await import('$lib');
             setAccessToken(data.token);
@@ -119,18 +110,7 @@
                 if (uid) void resolveUserName(uid);
             }
 
-            try {
-                const sample = posts?.[0];
-                if (sample) {
-                    console.log('delete-visibility-debug', {
-                        postId: sample.postId || sample.id,
-                        postUserId: getUserIdFrom(sample),
-                        currentUserId,
-                        isAdmin,
-                        canDelete: canDeleteEntity(sample)
-                    });
-                }
-            } catch {}
+            
         } finally {
             isLoadingFeed = false;
         }
