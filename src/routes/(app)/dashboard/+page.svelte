@@ -539,6 +539,12 @@
     </div>
 </div>
 
+{#if showDebug}
+    <div class="debug-overlay">
+        <div>me={currentUserId || 'n/a'} · admin={isAdmin ? 'y' : 'n'}</div>
+    </div>
+{/if}
+
 <style>
     .page-header {
         width: 100%;
@@ -550,6 +556,17 @@
         position: fixed;
         top: 1rem;
         right: 1rem;
+        z-index: 1000;
+    }
+    .debug-overlay {
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        background: var(--card-bg);
+        border: 1px solid var(--ghost-border);
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        color: var(--muted);
         z-index: 1000;
     }
     .card {
