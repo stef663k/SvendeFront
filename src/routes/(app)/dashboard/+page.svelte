@@ -27,6 +27,27 @@
         return false;
     }
 
+    function getCookieLocal(name: string): string | null {
+        try {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop()!.split(';').shift() || null;
+        } catch {}
+        return null;
+    }
+
+    function deriveAdminFromToken(): boolean {
+        try {
+            const t = getCookieLocal('auth_token');
+            if (!t) return false;
+            const payloadRaw = t.split('.')[1] || '';
+            const json = atob(payloadRaw.replace(/-/g, '+').replace(/_/g, '/'));
+            const payload = JSON.parse(json || '{}');
+            const roles: any[] = ([] as any[]).concat(payload?.role || payload?.roles || []);
+            return roles.join(',').toLowerCase().includes('admin');
+        } catch { return false; }
+    }
+
 
     onMount(async () => {
         if (!browser) return;
@@ -46,6 +67,7 @@
             hasAdminRole(data?.user?.roles) || hasAdminRole(data?.roles) ||
             hasAdminRole(data?.user?.role) || hasAdminRole(data?.user?.roleName)
         );
+        if (!isAdmin) isAdmin = deriveAdminFromToken();
         await tick();
 
         try {
@@ -72,6 +94,7 @@
                 const feedRes = await api('/api/Post/feed?skip=0&take=20');
                 if (feedRes.ok) posts = await feedRes.json().catch(() => []);
             }
+            posts = [...posts];
             for (const p of posts) {
                 const uid = getUserIdFrom(p);
                 if (uid) void resolveUserName(uid);
@@ -454,7 +477,7 @@
                                         {#if (postIdToComments[post.postId || post.id] || []).length === 0}
                                             <p class="muted">No comments</p>
                                         {:else}
-                                            {#each postIdToComments[post.postId || post.id] as c}
+                                    {#each postIdToComments[post.postId || post.id] as c}
                                                 <div class="comment-row">
                                                     <div class="comment-author" style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
                                                         <strong>{displayNameFromCache(c)}</strong>
@@ -463,6 +486,7 @@
                                                         {/if}
                                                     </div>
                                                     <div class="comment-body">{c.content ?? c.text ?? ''}</div>
+                                                    <span class="muted small" style="display:block;">c.uid={getUserIdFrom(c)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'}</span>
                                                 </div>
                                             {/each}
                                         {/if}
