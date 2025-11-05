@@ -17,6 +17,16 @@
     let postIdToNewComment: Record<string, string> = {};
     let postIdToPosting: Record<string, boolean> = {};
     let userIdToName: Record<string, string> = {};
+    function hasAdminRole(roles: any): boolean {
+        if (!roles) return false;
+        const items = Array.isArray(roles) ? roles : [roles];
+        for (const r of items) {
+            const name = typeof r === 'string' ? r : (r?.name || r?.role || r?.roleName || r?.normalizedName || '');
+            if (typeof name === 'string' && name.toLowerCase().includes('admin')) return true;
+        }
+        return false;
+    }
+
 
     onMount(async () => {
         if (!browser) return;
@@ -32,9 +42,9 @@
         currentUserId = data?.user?.userId || data?.user?.id || data?.userId || data?.id || '';
         currentUserName = [data?.user?.firstName, data?.user?.lastName].filter(Boolean).join(' ').trim();
         isAdmin = Boolean(
-            data?.user?.isAdmin ||
-            (Array.isArray(data?.user?.roles) && data.user.roles.some((r: any) => String(r).toLowerCase() === 'admin')) ||
-            (Array.isArray(data?.roles) && data.roles.some((r: any) => String(r).toLowerCase() === 'admin'))
+            data?.user?.isAdmin || data?.isAdmin ||
+            hasAdminRole(data?.user?.roles) || hasAdminRole(data?.roles) ||
+            hasAdminRole(data?.user?.role) || hasAdminRole(data?.user?.roleName)
         );
         if (data?.token) {
             const { setAccessToken } = await import('$lib');
