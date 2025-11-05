@@ -249,7 +249,7 @@
     async function resolveUserName(userId: string) {
         if (userIdToName[userId]) return;
         try {
-            const res = await fetch(`${API_BASE}/api/User/${encodeURIComponent(userId)}/public`, { credentials: 'omit' });
+            const res = await api(`/api/User/${encodeURIComponent(userId)}/public`);
             if (!res.ok) return;
             const u = await res.json().catch(() => null);
             if (!u) return;
