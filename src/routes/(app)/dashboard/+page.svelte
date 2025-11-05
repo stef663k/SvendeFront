@@ -77,6 +77,18 @@
                 if (uid) void resolveUserName(uid);
             }
 
+            try {
+                const sample = posts?.[0];
+                if (sample) {
+                    console.log('delete-visibility-debug', {
+                        postId: sample.postId || sample.id,
+                        postUserId: getUserIdFrom(sample),
+                        currentUserId,
+                        isAdmin,
+                        canDelete: canDeleteEntity(sample)
+                    });
+                }
+            } catch {}
         } finally {
             isLoadingFeed = false;
         }
@@ -420,9 +432,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if false}
-                                <span class="muted small">uid={getUserIdFrom(post)} me={currentUserId} admin={isAdmin ? 'y' : 'n'}</span>
-                            {/if}
+                            <span class="muted small" style="display:block;">uid={getUserIdFrom(post)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'}</span>
                             <div class="post-body">{post.content ?? post.text ?? ''}</div>
                             <div class="comment-editor">
                                 <textarea
