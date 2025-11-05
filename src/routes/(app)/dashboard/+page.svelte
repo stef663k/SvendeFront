@@ -246,12 +246,20 @@
     function getUserIdFrom(e: any): string | null {
         if (!e) return null;
         if (e.authorId) return String(e.authorId);
+        if (e.authorUserId) return String(e.authorUserId);
+        if (e.createdByUserId) return String(e.createdByUserId);
+        if (e.createdById) return String(e.createdById);
+        if (e.ownerId) return String(e.ownerId);
         if (e.userId) return String(e.userId);
         const base = e.user ?? e.author ?? e;
         if (base?.authorId) return String(base.authorId);
+        if (base?.authorUserId) return String(base.authorUserId);
+        if (base?.createdByUserId) return String(base.createdByUserId);
+        if (base?.createdById) return String(base.createdById);
+        if (base?.ownerId) return String(base.ownerId);
         if (base?.userId) return String(base.userId);
-        for (const [k, v] of Object.entries(e)) if (/userId$/i.test(k) && v) return String(v);
-        for (const [k, v] of Object.entries(base)) if (/userId$/i.test(k) && v) return String(v);
+        for (const [k, v] of Object.entries(e)) if ((/userId$/i.test(k) || /authorId$/i.test(k) || /createdBy(Id|UserId)$/i.test(k) || /ownerId$/i.test(k)) && v) return String(v);
+        for (const [k, v] of Object.entries(base)) if ((/userId$/i.test(k) || /authorId$/i.test(k) || /createdBy(Id|UserId)$/i.test(k) || /ownerId$/i.test(k)) && v) return String(v);
         return null;
     }
 
