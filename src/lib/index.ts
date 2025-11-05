@@ -44,7 +44,9 @@ export async function api(path: string, init: RequestInit = {}): Promise<Respons
         const token = accessTokenMemory ?? cookieToken;
         const headers = new Headers(init.headers || {} as any);
         if (token && !headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
-        return fetch(`${API_BASE}${path}`, { ...init, headers, credentials: 'include' });
+        const isAuthEndpoint = path.startsWith('/api/Auth/');
+        const credentials: RequestCredentials = isAuthEndpoint ? 'include' : 'omit';
+        return fetch(`${API_BASE}${path}`, { ...init, headers, credentials });
     }
 
     const res = await doFetch();
