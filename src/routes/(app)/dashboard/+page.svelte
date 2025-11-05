@@ -49,9 +49,27 @@
         } catch { return false; }
     }
 
+    function deriveFromToken(): void {
+        try {
+            const t = getCookieLocal('auth_token');
+            if (!t) return;
+            const payloadRaw = t.split('.')[1] || '';
+            const json = atob(payloadRaw.replace(/-/g, '+').replace(/_/g, '/'));
+            const payload = JSON.parse(json || '{}');
+            const id = payload?.sub || payload?.nameid || payload?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || '';
+            if (!currentUserId && id) currentUserId = String(id);
+            if (!isAdmin) {
+                const roles: any[] = ([] as any[]).concat(payload?.role || payload?.roles || []);
+                if (roles.join(',').toLowerCase().includes('admin')) isAdmin = true;
+            }
+        } catch {}
+    }
+
 
     onMount(async () => {
         if (!browser) return;
+        deriveFromToken();
+        await tick();
       
         const res = await api('/api/Auth/session');
         if (!res.ok) {
