@@ -17,6 +17,7 @@
     let postIdToNewComment: Record<string, string> = {};
     let postIdToPosting: Record<string, boolean> = {};
     let userIdToName: Record<string, string> = {};
+    let showDebug: boolean = true;
     function hasAdminRole(roles: any): boolean {
         if (!roles) return false;
         const items = Array.isArray(roles) ? roles : [roles];
@@ -413,9 +414,16 @@
 {#if firstName}
         <p class="muted">Welcome, <strong>{firstName}</strong></p>
     {/if}
-    {#if currentUserId}
-        <p class="muted small">Debug: userId={currentUserId} · isAdmin={isAdmin ? 'yes' : 'no'}</p>
-    {/if}
+    <div class="row" style="margin-top:0.25rem;">
+        <div class="muted small" style="flex:1;">
+            {#if currentUserId}
+                {#if showDebug}
+                    Debug: userId={currentUserId} · isAdmin={isAdmin ? 'yes' : 'no'}
+                {/if}
+            {/if}
+        </div>
+        <button class="ghost" type="button" onclick={() => showDebug = !showDebug}>{showDebug ? 'Hide' : 'Show'} debug</button>
+    </div>
     <div class="grid">
         <div class="tile inputtile">
             <div class="compose-body">
@@ -455,7 +463,9 @@
                                     {/if}
                                 </div>
                             </div>
-                            <span class="muted small" style="display:block;">uid={getUserIdFrom(post)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'}</span>
+                            {#if showDebug}
+                                <span class="muted small" style="display:block;">uid={getUserIdFrom(post)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'} · canDelete={canDeleteEntity(post) ? 'y' : 'n'}</span>
+                            {/if}
                             <div class="post-body">{post.content ?? post.text ?? ''}</div>
                             <div class="comment-editor">
                                 <textarea
@@ -486,7 +496,9 @@
                                                         {/if}
                                                     </div>
                                                     <div class="comment-body">{c.content ?? c.text ?? ''}</div>
-                                                    <span class="muted small" style="display:block;">c.uid={getUserIdFrom(c)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'}</span>
+                                                    {#if showDebug}
+                                                        <span class="muted small" style="display:block;">c.uid={getUserIdFrom(c)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'} · canDelete={canDeleteEntity(c) ? 'y' : 'n'}</span>
+                                                    {/if}
                                                 </div>
                                             {/each}
                                         {/if}
