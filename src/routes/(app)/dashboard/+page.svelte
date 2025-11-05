@@ -46,6 +46,17 @@
             hasAdminRole(data?.user?.roles) || hasAdminRole(data?.roles) ||
             hasAdminRole(data?.user?.role) || hasAdminRole(data?.user?.roleName)
         );
+
+        try {
+            console.log('session user roles:', {
+                roles_user: data?.user?.roles,
+                roles_root: data?.roles,
+                role_user: data?.user?.role,
+                roleName_user: data?.user?.roleName,
+                isAdmin,
+                currentUserId
+            });
+        } catch {}
         if (data?.token) {
             const { setAccessToken } = await import('$lib');
             setAccessToken(data.token);
