@@ -108,10 +108,10 @@
         try {
             const allRes = await api('/api/Post?skip=0&take=20');
             if (allRes.ok) {
-                posts = await allRes.json().catch(() => []);
+                posts = (await allRes.json().catch(() => []))?.map((p: any) => normalizeAuthor(p)) ?? [];
             } else {
                 const feedRes = await api('/api/Post/feed?skip=0&take=20');
-                if (feedRes.ok) posts = await feedRes.json().catch(() => []);
+                if (feedRes.ok) posts = (await feedRes.json().catch(() => []))?.map((p: any) => normalizeAuthor(p)) ?? [];
             }
             posts = [...posts];
             for (const p of posts) {
@@ -249,7 +249,7 @@
         try {
             const res = await api(`/api/Comment?postId=${encodeURIComponent(postId)}&skip=0&take=50`);
             if (res.ok) {
-                postIdToComments[postId] = await res.json().catch(() => []);
+                postIdToComments[postId] = (await res.json().catch(() => []))?.map((c: any) => normalizeAuthor(c)) ?? [];
                 for (const c of postIdToComments[postId]) {
                     const uid = getUserIdFrom(c);
                     if (uid) void resolveUserName(uid);
@@ -280,7 +280,7 @@
                     postIdToLoading[postId] = true;
                     const refresh = await api(`/api/Comment?postId=${encodeURIComponent(postId)}&skip=0&take=50`);
                     if (refresh.ok) {
-                        postIdToComments[postId] = await refresh.json().catch(() => postIdToComments[postId] || []);
+                        postIdToComments[postId] = (await refresh.json().catch(() => postIdToComments[postId] || []))?.map((c: any) => normalizeAuthor(c)) ?? (postIdToComments[postId] || []);
                         for (const c of postIdToComments[postId]) {
                             const uid = getUserIdFrom(c);
                             if (uid) void resolveUserName(uid);
@@ -315,6 +315,14 @@
         for (const [k, v] of Object.entries(e)) if ((/userId$/i.test(k) || /authorId$/i.test(k) || /createdBy(Id|UserId)$/i.test(k) || /ownerId$/i.test(k)) && v) return String(v);
         for (const [k, v] of Object.entries(base)) if ((/userId$/i.test(k) || /authorId$/i.test(k) || /createdBy(Id|UserId)$/i.test(k) || /ownerId$/i.test(k)) && v) return String(v);
         return null;
+    }
+
+    function normalizeAuthor(e: any): any {
+        if (!e) return e;
+        if (!e.authorId) {
+            e.authorId = e.authorId ?? e.userId ?? e?.author?.userId ?? e?.user?.userId ?? e.createdById ?? e.createdByUserId ?? null;
+        }
+        return e;
     }
 
     async function resolveUserName(userId: string) {
