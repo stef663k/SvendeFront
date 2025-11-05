@@ -383,6 +383,9 @@
 {#if firstName}
         <p class="muted">Welcome, <strong>{firstName}</strong></p>
     {/if}
+    {#if currentUserId}
+        <p class="muted small">Debug: userId={currentUserId} · isAdmin={isAdmin ? 'yes' : 'no'}</p>
+    {/if}
     <div class="grid">
         <div class="tile inputtile">
             <div class="compose-body">
