@@ -18,6 +18,7 @@
     let postIdToPosting: Record<string, boolean> = {};
     let userIdToName: Record<string, string> = {};
     let showDebug: boolean = true;
+    let forceShowDelete: boolean = true; // TEMP: to verify rendering of delete buttons
     function hasAdminRole(roles: any): boolean {
         if (!roles) return false;
         const items = Array.isArray(roles) ? roles : [roles];
@@ -366,7 +367,7 @@
     }
 
     function canDeleteEntity(entity: any): boolean {
-        return isAdmin || isOwner(entity);
+        return forceShowDelete || isAdmin || isOwner(entity);
     }
 
     async function deletePost(postId: string) {
