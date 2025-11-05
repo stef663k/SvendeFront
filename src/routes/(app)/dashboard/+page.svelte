@@ -432,11 +432,9 @@
 </div>
 
 <button class="logout-top ghost" onclick={handleLogout}>Logout</button>
+<button class="export-top ghost" type="button" onclick={exportMyData} disabled={!currentUserId}>Export my data</button>
 
 <div class="card">
-    <div class="row">
-        <button class="ghost" type="button" onclick={exportMyData} disabled={!currentUserId}>Export my data</button>
-    </div>
 {#if firstName}
         <p class="muted">Welcome, <strong>{firstName}</strong></p>
     {/if}
@@ -536,6 +534,12 @@
         position: fixed;
         top: 1rem;
         right: 1rem;
+        z-index: 1000;
+    }
+    .export-top {
+        position: fixed;
+        top: 1rem;
+        right: 9.5rem; /* to the left of theme toggle (5.5rem) and logout (1rem) */
         z-index: 1000;
     }
 
