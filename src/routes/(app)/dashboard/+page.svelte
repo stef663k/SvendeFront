@@ -17,8 +17,7 @@
     let postIdToNewComment: Record<string, string> = {};
     let postIdToPosting: Record<string, boolean> = {};
     let userIdToName: Record<string, string> = {};
-    let showDebug: boolean = true;
-    let forceShowDelete: boolean = true; // TEMP: to verify rendering of delete buttons
+    let forceShowDelete: boolean = false; // TEMP flag disabled now that Delete is verified
     function hasAdminRole(roles: any): boolean {
         if (!roles) return false;
         const items = Array.isArray(roles) ? roles : [roles];
@@ -367,7 +366,7 @@
     }
 
     function canDeleteEntity(entity: any): boolean {
-        return forceShowDelete || isAdmin || isOwner(entity);
+        return isAdmin || isOwner(entity);
     }
 
     async function deletePost(postId: string) {
@@ -441,16 +440,6 @@
 {#if firstName}
         <p class="muted">Welcome, <strong>{firstName}</strong></p>
     {/if}
-    <div class="row" style="margin-top:0.25rem;">
-        <div class="muted small" style="flex:1;">
-            {#if currentUserId}
-                {#if showDebug}
-                    Debug: userId={currentUserId} · isAdmin={isAdmin ? 'yes' : 'no'}
-                {/if}
-            {/if}
-        </div>
-        <button class="ghost" type="button" onclick={() => showDebug = !showDebug}>{showDebug ? 'Hide' : 'Show'} debug</button>
-    </div>
     <div class="grid">
         <div class="tile inputtile">
             <div class="compose-body">
@@ -490,9 +479,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            {#if showDebug}
-                                <span class="muted small" style="display:block;">uid={getUserIdFrom(post)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'} · canDelete={canDeleteEntity(post) ? 'y' : 'n'}</span>
-                            {/if}
+                            
                             <div class="post-body">{post.content ?? post.text ?? ''}</div>
                             <div class="comment-editor">
                                 <textarea
@@ -523,9 +510,7 @@
                                                         {/if}
                                                     </div>
                                                     <div class="comment-body">{c.content ?? c.text ?? ''}</div>
-                                                    {#if showDebug}
-                                                        <span class="muted small" style="display:block;">c.uid={getUserIdFrom(c)} · me={currentUserId} · admin={isAdmin ? 'y' : 'n'} · canDelete={canDeleteEntity(c) ? 'y' : 'n'}</span>
-                                                    {/if}
+                                                    
                                                 </div>
                                             {/each}
                                         {/if}
@@ -540,12 +525,6 @@
     </div>
 </div>
 
-{#if showDebug}
-    <div class="debug-overlay">
-        <div>me={currentUserId || 'n/a'} · admin={isAdmin ? 'y' : 'n'}</div>
-    </div>
-{/if}
-
 <style>
     .page-header {
         width: 100%;
@@ -559,17 +538,7 @@
         right: 1rem;
         z-index: 1000;
     }
-    .debug-overlay {
-        position: fixed;
-        left: 1rem;
-        bottom: 1rem;
-        background: var(--card-bg);
-        border: 1px solid var(--ghost-border);
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.5rem;
-        color: var(--muted);
-        z-index: 1000;
-    }
+
     .card {
         width: 100%;
         max-width: 60rem; /* 960px */
