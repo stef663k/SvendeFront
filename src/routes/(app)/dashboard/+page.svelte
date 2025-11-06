@@ -105,7 +105,23 @@
                 if (feedRes.ok) posts = (await feedRes.json().catch(() => []))?.map((p: any) => normalizeAuthor(p)) ?? [];
             }
             posts = [...posts];
+            const seedNameFromEntity = (entity: any) => {
+                try {
+                    const uidLocal = getUserIdFrom(entity);
+                    if (!uidLocal || userIdToName[uidLocal]) return;
+                    const baseLocal = entity?.user ?? entity?.author ?? entity;
+                    const pickLocal = (v: any) => (typeof v === 'string' && v.trim().length ? v.trim() : '');
+                    const directLocal = pickLocal(baseLocal?.userName) || pickLocal(baseLocal?.username) || pickLocal(baseLocal?.fullName) || pickLocal(baseLocal?.name);
+                    const firstLocal = pickLocal(baseLocal?.firstName);
+                    const lastLocal = pickLocal(baseLocal?.lastName);
+                    const combinedLocal = `${firstLocal} ${lastLocal}`.trim();
+                    const emailLocal = pickLocal(baseLocal?.email);
+                    const nameLocal = directLocal || combinedLocal || emailLocal;
+                    if (nameLocal) userIdToName = { ...userIdToName, [uidLocal]: nameLocal };
+                } catch {}
+            };
             for (const p of posts) {
+                seedNameFromEntity(p);
                 const uid = getUserIdFrom(p);
                 if (uid) void resolveUserName(uid);
             }
@@ -231,6 +247,20 @@
             if (res.ok) {
                 postIdToComments[postId] = (await res.json().catch(() => []))?.map((c: any) => normalizeAuthor(c)) ?? [];
                 for (const c of postIdToComments[postId]) {
+                    try {
+                        const uidLocal = getUserIdFrom(c);
+                        if (uidLocal && !userIdToName[uidLocal]) {
+                            const baseLocal = c?.user ?? c?.author ?? c;
+                            const pickLocal = (v: any) => (typeof v === 'string' && v.trim().length ? v.trim() : '');
+                            const directLocal = pickLocal(baseLocal?.userName) || pickLocal(baseLocal?.username) || pickLocal(baseLocal?.fullName) || pickLocal(baseLocal?.name);
+                            const firstLocal = pickLocal(baseLocal?.firstName);
+                            const lastLocal = pickLocal(baseLocal?.lastName);
+                            const combinedLocal = `${firstLocal} ${lastLocal}`.trim();
+                            const emailLocal = pickLocal(baseLocal?.email);
+                            const nameLocal = directLocal || combinedLocal || emailLocal;
+                            if (nameLocal) userIdToName = { ...userIdToName, [uidLocal]: nameLocal };
+                        }
+                    } catch {}
                     const uid = getUserIdFrom(c);
                     if (uid) void resolveUserName(uid);
                 }
