@@ -322,7 +322,12 @@
             }
             const u = await (res as Response).json().catch(() => null);
             if (!u) return;
-            const name = [u.firstName, u.lastName].filter(Boolean).join(' ').trim() || String(userId);
+            const pick = (v: any) => typeof v === 'string' && v.trim().length ? v.trim() : '';
+            const direct = pick(u.userName) || pick(u.username) || pick(u.fullName) || pick(u.name);
+            const first = pick(u.firstName);
+            const last = pick(u.lastName);
+            const combined = `${first} ${last}`.trim();
+            const name = direct || combined || pick(u.email) || String(userId);
             userIdToName = { ...userIdToName, [userId]: name };
         } catch {}
     }
@@ -519,7 +524,7 @@
     .export-top {
         position: fixed;
         top: 1rem;
-        right: 9.5rem; /* to the left of theme toggle (5.5rem) and logout (1rem) */
+        right: 13rem; 
         z-index: 1000;
     }
 

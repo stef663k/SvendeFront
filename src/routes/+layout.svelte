@@ -99,7 +99,7 @@
 	.theme-toggle {
 		position: fixed;
 		top: 1rem;
-		right: 5.5rem;
+		right: 7rem;
 		border: 1px solid var(--ghost-border);
 		background: var(--card-bg);
 		color: var(--text);
