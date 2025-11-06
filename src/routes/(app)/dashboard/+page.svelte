@@ -122,11 +122,12 @@
             };
             for (const p of posts) {
                 seedNameFromEntity(p);
-                const uid = getUserIdFrom(p);
-                if (uid) void resolveUserName(uid);
             }
+            try {
+                const ids = Array.from(new Set(posts.map((p) => getUserIdFrom(p)).filter((v): v is string => !!v)));
+                await Promise.allSettled(ids.map((id) => resolveUserName(id)));
+            } catch {}
 
-            
         } finally {
             isLoadingFeed = false;
         }
@@ -261,9 +262,11 @@
                             if (nameLocal) userIdToName = { ...userIdToName, [uidLocal]: nameLocal };
                         }
                     } catch {}
-                    const uid = getUserIdFrom(c);
-                    if (uid) void resolveUserName(uid);
                 }
+                try {
+                    const ids = Array.from(new Set(postIdToComments[postId].map((c) => getUserIdFrom(c)).filter((v): v is string => !!v)));
+                    await Promise.allSettled(ids.map((id) => resolveUserName(id)));
+                } catch {}
             } else {
                 postIdToComments[postId] = [];
             }
