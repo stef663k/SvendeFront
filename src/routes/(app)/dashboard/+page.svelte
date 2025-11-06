@@ -337,12 +337,14 @@
         if (uid) {
             if (userIdToName[uid]) return userIdToName[uid];
             if (uid === currentUserId && currentUserName) return currentUserName;
+            void resolveUserName(uid);
         }
         const base = entity?.user ?? entity?.author ?? entity;
         const first = (base?.firstName || '').toString().trim();
         const last = (base?.lastName || '').toString().trim();
         const combined = `${first} ${last}`.trim();
-        return combined || 'Unknown';
+        const email = (base?.email || '').toString().trim();
+        return combined || email || 'Unknown';
     }
 
     function isOwner(entity: any): boolean {
