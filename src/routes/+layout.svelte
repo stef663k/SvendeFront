@@ -95,6 +95,11 @@
 		place-items: center;
 		padding: 1.5rem;
 	}
+	@media (max-width: 48rem) {
+		.app-shell {
+			align-items: start;
+		}
+	}
 
 	.theme-toggle {
 		position: fixed;
