@@ -97,7 +97,8 @@
 	}
 	@media (max-width: 48rem) {
 		.app-shell {
-			align-items: start;
+			display: block;
+			padding-top: 4.5rem;
 		}
 	}
 
