@@ -64,7 +64,7 @@
 	}
 
 	:global(.dark) {
-		--bg: linear-gradient(135deg, #0b1220 0%, #111827 100%);
+		--bg: #000000;
 		--text: #e5e7eb;
 		--card-bg: #0b1220;
 		--card-border: rgba(148, 163, 184, 0.15);
