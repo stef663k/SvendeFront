@@ -466,6 +466,12 @@
                     placeholder="Write something..."
                     bind:value={newPost}
                     rows={newPost.length > 60 ? 4 : 2}
+                    onkeydown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey && newPost.trim().length) {
+                            e.preventDefault();
+                            createPost();
+                        }
+                    }}
                 ></textarea>
                 <div class="actions">
                     {#if newPost.length > 0}
@@ -505,6 +511,14 @@
                                     rows={2}
                                     placeholder="Write a comment..."
                                     bind:value={postIdToNewComment[post.postId || post.id]}
+                                    onkeydown={(e) => {
+                                        const postId = post.postId || post.id;
+                                        const commentText = (postIdToNewComment[postId] || '').trim();
+                                        if (e.key === 'Enter' && !e.shiftKey && commentText.length && !postIdToPosting[postId]) {
+                                            e.preventDefault();
+                                            submitComment(postId);
+                                        }
+                                    }}
                                 ></textarea>
                                 <div class="comment-actions">
                                     <button class="ghost" type="button" onclick={() => postIdToNewComment[post.postId || post.id] = ''} disabled={!((postIdToNewComment[post.postId || post.id]||'').trim().length)}>Clear</button>
